@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/hive_boxes.dart';
 import 'features/habits/data/models/habit_model.dart';
 import 'features/habits/data/models/habit_log_model.dart';
+import 'features/habits/data/repositories/habit_repository.dart';
+import 'features/habits/presentation/cubit/habit_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,10 +29,13 @@ class HabitTrackerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Habit Tracker',
-      debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+    return BlocProvider(
+      create: (_) => HabitCubit(repository: HabitRepository())..loadHabits(),
+      child: MaterialApp(
+        title: 'Habit Tracker',
+        debugShowCheckedModeBanner: false,
+        home: const HomeScreen(),
+      ),
     );
   }
 }
