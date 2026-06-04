@@ -3,16 +3,23 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/hive_boxes.dart';
 import 'features/habits/data/models/habit_model.dart';
+import 'features/habits/data/models/habit_log_model.dart';
 
-void main()  async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter();
 
   Hive.registerAdapter(HabitModelAdapter());
+  Hive.registerAdapter(HabitFrequencyAdapter());
+  Hive.registerAdapter(HabitLogModelAdapter());
 
   await Hive.openBox<HabitModel>(HiveBoxes.habits);
+  await Hive.openBox<HabitLogModel>(HiveBoxes.habitLogs);
+
+  runApp(const HabitTrackerApp());
 }
+
 
 class HabitTrackerApp extends StatelessWidget {
   const HabitTrackerApp({super.key});
