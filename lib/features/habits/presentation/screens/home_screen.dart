@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/habit_model.dart';
 import '../widgets/habit_tile.dart';
+import '../widgets/add_habit_sheet.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -48,7 +49,7 @@ class HomeScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => AddHabitSheet.show(context),
         child: const Icon(Icons.add),
       ),
     );
