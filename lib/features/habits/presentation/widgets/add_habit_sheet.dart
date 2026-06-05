@@ -1,7 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/models/habit_model.dart';
+import '../cubit/habit_cubit.dart';
 
 const _kIcons = [
   Icons.fitness_center,
@@ -37,7 +39,10 @@ class AddHabitSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const AddHabitSheet(),
+      builder: (_) => BlocProvider.value(
+        value: context.read<HabitCubit>(),
+        child: const AddHabitSheet(),
+      ),
     );
   }
 
@@ -54,7 +59,7 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
   HabitFrequency _frequency = HabitFrequency.daily;
   final Set<int> _selectedWeekdays = {1, 2, 3, 4, 5, 6, 7};
   TimeOfDay? _reminderTime;
-  final bool _isSaving = false;
+  bool _isSaving = false;
 
   @override
   void dispose() {
@@ -64,7 +69,28 @@ class _AddHabitSheetState extends State<AddHabitSheet> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    Navigator.pop(context);
+
+    setState(() => _isSaving = true);
+
+    final habit = HabitModel(
+      id: '${DateTime.now().millisecondsSinceEpoch}',
+      name: _nameController.text.trim(),
+      iconCode: _selectedIcon.codePoint,
+      colorHex:
+          '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}',
+      frequency: _frequency,
+      weekdays: _frequency == HabitFrequency.weekly
+          ? _selectedWeekdays.toList()
+          : [],
+      reminderTime: _reminderTime != null
+          ? '${_reminderTime!.hour.toString().padLeft(2, '0')}:${_reminderTime!.minute.toString().padLeft(2, '0')}'
+          : null,
+      createdAt: DateTime.now(),
+    );
+
+    await context.read<HabitCubit>().addHabit(habit);
+
+    if (mounted) Navigator.pop(context);
   }
 
   Future<void> _pickTime() async {

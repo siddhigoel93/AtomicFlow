@@ -1,34 +1,16 @@
 import 'package:flutter/material.dart';
-import '../../data/models/habit_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/habit_cubit.dart';
+import '../cubit/habit_state.dart';
 import '../widgets/habit_tile.dart';
 import '../widgets/add_habit_sheet.dart';
+import '../../data/models/habit_model.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final mockHabits = [
-      HabitModel(
-        id: '1',
-        name: 'Drink Water',
-        iconCode: Icons.water_drop.codePoint,
-        colorHex: '#378ADD',
-        frequency: HabitFrequency.daily,
-        weekdays: const [1, 2, 3, 4, 5, 6, 7],
-        createdAt: DateTime.now(),
-      ),
-      HabitModel(
-        id: '2',
-        name: 'Read Book',
-        iconCode: Icons.menu_book.codePoint,
-        colorHex: '#7F77DD',
-        frequency: HabitFrequency.daily,
-        weekdays: const [1, 2, 3, 4, 5, 6, 7],
-        createdAt: DateTime.now(),
-      ),
-    ];
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -41,16 +23,88 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(top: 8, bottom: 100),
-        itemCount: mockHabits.length,
-        itemBuilder: (context, i) {
-          return HabitTile(habit: mockHabits[i]);
+      body: BlocBuilder<HabitCubit, HabitState>(
+        builder: (context, state) {
+          return switch (state) {
+            HabitInitial() => const SizedBox.shrink(),
+            HabitLoading() => const Center(child: CircularProgressIndicator()),
+            HabitError(:final message) => _ErrorView(message: message),
+            HabitLoaded(:final habits) when habits.isEmpty => const _EmptyState(),
+            HabitLoaded(:final habits) => _HabitList(habits: habits),
+          };
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => AddHabitSheet.show(context),
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class _HabitList extends StatelessWidget {
+  final List<HabitModel> habits;
+  const _HabitList({required this.habits});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 8, bottom: 100),
+      itemCount: habits.length,
+      itemBuilder: (_, i) => HabitTile(habit: habits[i]),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle_outline, size: 64, color: Colors.grey.shade300),
+          const SizedBox(height: 16),
+          Text(
+            'No habits yet',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.grey.shade500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Tap + to create your first habit',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade400),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String message;
+  const _ErrorView({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.error_outline, size: 48, color: Colors.red),
+          const SizedBox(height: 12),
+          Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: () => context.read<HabitCubit>().loadHabits(),
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
