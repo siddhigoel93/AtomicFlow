@@ -14,7 +14,7 @@ void main() {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const HabitTrackerApp());
 
-    // Verify that "Habit Tracker" is displayed.
-    expect(find.text('Habit Tracker'), findsWidgets);
+    // Verify that "Today" is displayed in the AppBar.
+    expect(find.text('Today'), findsOneWidget);
   });
 }

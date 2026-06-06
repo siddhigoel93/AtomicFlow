@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/notifications/notification_service.dart';
 import '../../data/models/habit_model.dart';
 import '../../data/models/habit_log_model.dart';
 import '../../data/repositories/habit_repository.dart';
@@ -6,9 +7,13 @@ import 'habit_state.dart';
 
 class HabitCubit extends Cubit<HabitState> {
   final HabitRepository _repository;
+  final NotificationService _notifications;
 
-  HabitCubit({required HabitRepository repository})
-      : _repository = repository,
+  HabitCubit({
+    required HabitRepository repository,
+    NotificationService? notifications,
+  })  : _repository = repository,
+        _notifications = notifications ?? NotificationService.instance,
         super(const HabitInitial());
 
   Future<void> loadHabits() async {
@@ -33,6 +38,7 @@ class HabitCubit extends Cubit<HabitState> {
   Future<void> addHabit(HabitModel habit) async {
     try {
       await _repository.saveHabit(habit);
+      await _notifications.scheduleHabitReminder(habit);
       await _refreshLoaded();
     } catch (e) {
       emit(HabitError('Failed to add habit: $e'));
@@ -42,6 +48,7 @@ class HabitCubit extends Cubit<HabitState> {
   Future<void> updateHabit(HabitModel updated) async {
     try {
       await _repository.saveHabit(updated);
+      await _notifications.scheduleHabitReminder(updated);
       await _refreshLoaded();
     } catch (e) {
       emit(HabitError('Failed to update habit: $e'));
@@ -50,6 +57,10 @@ class HabitCubit extends Cubit<HabitState> {
 
   Future<void> deleteHabit(String habitId) async {
     try {
+      final habit = _repository.getHabitById(habitId);
+      if (habit != null) {
+        await _notifications.cancelHabitReminder(habit);
+      }
       await _repository.deleteHabit(habitId);
       await _refreshLoaded();
     } catch (e) {

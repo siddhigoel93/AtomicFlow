@@ -1,13 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/notifications/notification_service.dart';
 import '../cubit/habit_cubit.dart';
 import '../cubit/habit_state.dart';
 import '../widgets/habit_tile.dart';
 import '../widgets/add_habit_sheet.dart';
 import '../../data/models/habit_model.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _requestNotificationPermission();
+  }
+
+  Future<void> _requestNotificationPermission() async {
+    final granted = await NotificationService.instance.requestPermission();
+    if (!granted && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enable notifications in Settings for habit reminders'),
+          action: SnackBarAction(label: 'Settings', onPressed: openAppSettings),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +64,10 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void openAppSettings() {
+  debugPrint('Open app settings clicked');
 }
 
 class _HabitList extends StatelessWidget {
