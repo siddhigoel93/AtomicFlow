@@ -23,7 +23,6 @@ void main() async {
   await Hive.openBox<HabitModel>(HiveBoxes.habits);
   await Hive.openBox<HabitLogModel>(HiveBoxes.habitLogs);
 
-  // Initialize notifications BEFORE runApp
   await NotificationService.instance.initialize();
 
   runApp(const HabitTrackerApp());
