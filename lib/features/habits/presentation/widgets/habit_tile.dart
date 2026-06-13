@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubit/habit_cubit.dart';
 import '../cubit/habit_state.dart';
 import '../../data/models/habit_model.dart';
+import '../../data/repositories/habit_repository.dart';
+import '../../../stats/presentation/cubit/stats_cubit.dart';
+import '../../../stats/presentation/screens/stats_screen.dart';
 
 class HabitTile extends StatelessWidget {
   final HabitModel habit;
@@ -38,6 +41,22 @@ class HabitTile extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ListTile(
+              leading: const Icon(Icons.bar_chart_outlined),
+              title: const Text('View statistics'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider(
+                      create: (_) => StatsCubit(repository: HabitRepository()),
+                      child: StatsScreen(habitId: habit.id),
+                    ),
+                  ),
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.archive_outlined),
               title: const Text('Archive habit'),
@@ -99,6 +118,17 @@ class _HabitTileView extends StatelessWidget {
           ),
         ),
         child: ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => StatsCubit(repository: HabitRepository()),
+                  child: StatsScreen(habitId: habit.id),
+                ),
+              ),
+            );
+          },
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           leading: _HabitIcon(
