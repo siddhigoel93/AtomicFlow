@@ -42,6 +42,9 @@ dependencies:
   timezone: ^0.9.4
 
 dev_dependencies:
+  hive_test: any
+  mocktail: any
+  bloc_test: any
   flutter_test:
     sdk: flutter
 
@@ -95,3 +98,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+dependency_overrides:
+  analyzer: ^6.0.0
