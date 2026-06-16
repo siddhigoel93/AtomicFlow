@@ -60,11 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         titleSpacing: 20,
         title: const _GreetingHeader(),
-        actions: [
-          IconButton(icon: const Icon(Icons.search_outlined), onPressed: () {}),
-          IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: () {}),
-          const SizedBox(width: 8),
-        ],
       ),
       body: BlocBuilder<HabitCubit, HabitState>(
         builder: (context, state) => switch (state) {
@@ -175,7 +170,9 @@ class WeekStripWidget extends StatelessWidget {
               border: Border.all(
                 color: isToday
                     ? Theme.of(context).colorScheme.primary
-                    : Colors.transparent,
+                    : (Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white.withOpacity(0.08)
+                        : Colors.grey.shade200),
                 width: 1.5,
               ),
             ),
@@ -226,7 +223,6 @@ class _StatsRow extends StatelessWidget {
         .where((h) => state.isCompletedToday(h.id)).length;
     final total = state.habits.length;
     final bestStreak = state.streaks.values.fold(0, math.max);
-    final weeklyRate = _computeWeeklyRate(state);
     final remaining = total - doneToday;
 
     return Row(
@@ -247,39 +243,8 @@ class _StatsRow extends StatelessWidget {
             sub: doneToday == total && total > 0 ? 'Perfect!' : '$remaining left',
           ),
         ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: _StatCard(
-            value: '${weeklyRate}%',
-            label: 'This week',
-            sub: 'rate',
-            subColor: const Color(0xFF1D9E75),
-          ),
-        ),
       ],
     );
-  }
-
-  int _computeWeeklyRate(HabitLoaded state) {
-    if (state.habits.isEmpty) return 0;
-    
-    final repository = HabitRepository();
-    final today = DateTime.now();
-    int done = 0;
-    int totalCompletions = 0;
-    
-    for (int i = 6; i >= 0; i--) {
-      final d = DateTime(today.year, today.month, today.day - i);
-      if (!d.isAfter(today)) {
-        final logs = repository.getLogsForDate(d);
-        final habitIds = state.habits.map((h) => h.id).toSet();
-        done += logs.where((log) => habitIds.contains(log.habitId)).length;
-        totalCompletions += state.habits.length;
-      }
-    }
-    
-    if (totalCompletions == 0) return 0;
-    return ((done / totalCompletions) * 100).round();
   }
 }
 
@@ -303,6 +268,12 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withOpacity(0.08)
+              : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -356,6 +327,12 @@ class _ProgressArcCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withOpacity(0.08)
+              : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
       child: Row(
         children: [
@@ -412,6 +389,12 @@ class _EmptyState extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Theme.of(context).brightness == Brightness.dark
+                  ? Colors.white.withOpacity(0.08)
+                  : Colors.grey.shade200,
+              width: 1.5,
+            ),
           ),
           child: Column(
             children: [
@@ -467,7 +450,11 @@ class _EmptyState extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade200),
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white.withOpacity(0.08)
+                          : Colors.grey.shade200,
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -516,6 +503,12 @@ class _QuoteCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withOpacity(0.08)
+              : Colors.grey.shade200,
+          width: 1.5,
+        ),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -106,7 +106,11 @@ class _HabitTileView extends StatelessWidget {
               : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDone ? _habitColor.withOpacity(0.4) : Colors.transparent,
+            color: isDone
+                ? _habitColor.withOpacity(0.4)
+                : (Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white.withOpacity(0.08)
+                    : Colors.grey.shade200),
             width: 1.5,
           ),
         ),
