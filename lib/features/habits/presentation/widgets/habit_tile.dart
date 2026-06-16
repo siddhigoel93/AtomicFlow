@@ -180,6 +180,38 @@ class _HabitIcon extends StatelessWidget {
     required this.isDone,
   });
 
+  IconData _getIconData(int codePoint) {
+    switch (codePoint) {
+      case 0xe28d:
+      case 0xe3af: // Fallback for tests / older version codePoint
+        return Icons.fitness_center;
+      case 0xe3dd:
+        return Icons.menu_book;
+      case 0xe56f:
+        return Icons.self_improvement;
+      case 0xe1dc:
+        return Icons.directions_run;
+      case 0xf05a2:
+        return Icons.water_drop;
+      case 0xe0db:
+        return Icons.bedtime;
+      case 0xe25b:
+        return Icons.favorite;
+      case 0xe113:
+        return Icons.brush;
+      case 0xe415:
+        return Icons.music_note;
+      case 0xe176:
+        return Icons.code;
+      case 0xe532:
+        return Icons.restaurant;
+      case 0xe1d2:
+        return Icons.directions_bike;
+      default:
+        return Icons.help_outline;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
@@ -192,7 +224,7 @@ class _HabitIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
-        IconData(iconCode, fontFamily: 'MaterialIcons'),
+        _getIconData(iconCode),
         color: color,
         size: 22,
       ),
