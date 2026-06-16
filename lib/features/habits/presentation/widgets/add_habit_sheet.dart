@@ -32,16 +32,30 @@ const _kColors = [
 ];
 
 class AddHabitSheet extends StatefulWidget {
-  const AddHabitSheet({super.key});
+  final String? prefillName;
+  final IconData? prefillIcon;
 
-  static Future<void> show(BuildContext context) {
+  const AddHabitSheet({
+    super.key,
+    this.prefillName,
+    this.prefillIcon,
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    String? prefillName,
+    IconData? prefillIcon,
+  }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: context.read<HabitCubit>(),
-        child: const AddHabitSheet(),
+        child: AddHabitSheet(
+          prefillName: prefillName,
+          prefillIcon: prefillIcon,
+        ),
       ),
     );
   }
@@ -52,14 +66,21 @@ class AddHabitSheet extends StatefulWidget {
 
 class _AddHabitSheetState extends State<AddHabitSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  late final TextEditingController _nameController;
 
-  IconData _selectedIcon = _kIcons.first;
+  late IconData _selectedIcon;
   Color _selectedColor = _kColors.first;
   HabitFrequency _frequency = HabitFrequency.daily;
   final Set<int> _selectedWeekdays = {1, 2, 3, 4, 5, 6, 7};
   TimeOfDay? _reminderTime;
   bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.prefillName);
+    _selectedIcon = widget.prefillIcon ?? _kIcons.first;
+  }
 
   @override
   void dispose() {

@@ -84,6 +84,10 @@ class HabitRepository {
         .toList();
   }
 
+  List<HabitLogModel> getAllLogs() {
+    return _logs.values.toList();
+  }
+
   int computeStreak(String habitId) {
     final logs = getLogsForHabit(habitId)
         .where((l) => l.isCompleted)

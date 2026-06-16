@@ -10,11 +10,14 @@ import 'package:habit_tracker/core/hive_boxes.dart';
 import '../../../helpers/test_helpers.dart';
 
 void main() {
-  setUp(() async {
-    await setUpTestHive();
+  setUpAll(() {
     Hive.registerAdapter(HabitModelAdapter());
     Hive.registerAdapter(HabitFrequencyAdapter());
     Hive.registerAdapter(HabitLogModelAdapter());
+  });
+
+  setUp(() async {
+    await setUpTestHive();
     await Hive.openBox<HabitModel>(HiveBoxes.habits);
     await Hive.openBox<HabitLogModel>(HiveBoxes.habitLogs);
   });

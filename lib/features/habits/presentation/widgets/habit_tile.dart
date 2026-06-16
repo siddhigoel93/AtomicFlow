@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../cubit/habit_cubit.dart';
 import '../cubit/habit_state.dart';
 import '../../data/models/habit_model.dart';
@@ -46,15 +47,7 @@ class HabitTile extends StatelessWidget {
               title: const Text('View statistics'),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => BlocProvider(
-                      create: (_) => StatsCubit(repository: HabitRepository()),
-                      child: StatsScreen(habitId: habit.id),
-                    ),
-                  ),
-                );
+                context.push('/stats/${habit.id}');
               },
             ),
             ListTile(
@@ -119,15 +112,7 @@ class _HabitTileView extends StatelessWidget {
         ),
         child: ListTile(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) => StatsCubit(repository: HabitRepository()),
-                  child: StatsScreen(habitId: habit.id),
-                ),
-              ),
-            );
+            context.push('/stats/${habit.id}');
           },
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -292,9 +277,8 @@ class _AnimatedCheckboxState extends State<_AnimatedCheckbox>
   }
 
   Future<void> _handleTap() async {
-    await _controller.forward();
+    _controller.forward().then((_) => _controller.reverse());
     widget.onTap();
-    await _controller.reverse();
   }
 
   @override

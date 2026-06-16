@@ -72,17 +72,27 @@ void main() {
 
     testWidgets('shows strikethrough text when done', (tester) async {
       await pumpTile(tester, state: loadedState(done: true));
-      final text = tester.widget<Text>(find.text('Read'));
+      final animatedTextStyle = tester.widget<AnimatedDefaultTextStyle>(
+        find.ancestor(
+          of: find.text('Read'),
+          matching: find.byType(AnimatedDefaultTextStyle),
+        ).first,
+      );
       expect(
-        (text.style ?? const TextStyle()).decoration,
+        animatedTextStyle.style.decoration,
         TextDecoration.lineThrough,
       );
     });
 
     testWidgets('no strikethrough when not done', (tester) async {
       await pumpTile(tester, state: loadedState(done: false));
-      final text = tester.widget<Text>(find.text('Read'));
-      final decoration = (text.style ?? const TextStyle()).decoration;
+      final animatedTextStyle = tester.widget<AnimatedDefaultTextStyle>(
+        find.ancestor(
+          of: find.text('Read'),
+          matching: find.byType(AnimatedDefaultTextStyle),
+        ).first,
+      );
+      final decoration = animatedTextStyle.style.decoration;
       expect(decoration, isNot(TextDecoration.lineThrough));
     });
   });
